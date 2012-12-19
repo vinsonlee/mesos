@@ -17,6 +17,7 @@
  */
 
 #include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 
@@ -263,20 +264,19 @@ TEST_F(FilesTest, BrowseTest)
       process::http::get(pid, "browse.json", "path=missing"));
 }
 
-
 TEST_F(FilesTest, DownloadTest)
 {
   Files files;
   const process::PID<>& pid = files.pid();
 
   // This is a one-pixel black gif image.
-  char gifData[] = {
+  const unsigned char gifData[] = {
       0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x01, 0x00, 0x01, 0x00, 0x91, 0x00,
       0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x2c, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02,
       0x02, 0x4c, 0x01, 0x00, 0x3b, 0x00
   };
-  string data(gifData, sizeof(gifData));
+  string data((const char*)gifData, sizeof(gifData));
 
   ASSERT_SOME(os::write("binary", "no file extension"));
   ASSERT_SOME(os::write("black.gif", data));
