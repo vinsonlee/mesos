@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#include <Python.h>
 #include <iostream>
 
 #include "proxy_scheduler.hpp"
