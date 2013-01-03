@@ -110,7 +110,7 @@ public:
     add(&Flags::cgroups_subsystems,
         "cgroups_subsystems",
         "List of subsystems to enable (e.g., 'cpu,freezer')\n",
-        "cpu,memory,freezer");
+        "cpu,network,memory,freezer");
 #endif
   }
 

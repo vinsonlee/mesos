@@ -652,9 +652,11 @@ HierarchicalAllocatorProcess<UserSorter, FrameworkSorter>::allocate(
 
       Value::Scalar none;
       Value::Scalar cpus = resources.get("cpus", none);
+      // TODO(tdmackey): net? more explicit?
+      Value::Scalar net = resources.get("net", none);
       Value::Scalar mem = resources.get("mem", none);
 
-      if (cpus.value() >= MIN_CPUS && mem.value() > MIN_MEM) {
+      if (cpus.value() >= MIN_CPUS && net.value() >= MIN_NET && mem.value() > MIN_MEM) {
         VLOG(1) << "Found available resources: " << resources
                 << " on slave " << slaveId;
         available[slaveId] = resources;

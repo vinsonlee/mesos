@@ -36,17 +36,26 @@ namespace master {
 // So we've moved these to have external linkage but perhaps in the future
 // we can revert this.
 
+
+// TODO(tdmackey):NET? more explicit?
+
 // Maximum number of slot offers to have outstanding for each framework.
 extern const int MAX_OFFERS_PER_FRAMEWORK;
 
 // Minimum number of cpus / task.
 extern const uint32_t MIN_CPUS;
 
+// Minimum amount of network bandwidth / task.
+extern const uint32_t MIN_NET;
+
 // Minimum amount of memory / task.
 extern const uint32_t MIN_MEM;
 
 // Maximum number of CPUs per machine.
 extern const uint32_t MAX_CPUS;
+
+// Maximum amount of network bandwidth / machine.
+extern const uint32_t MAX_NET;
 
 // Maximum amount of memory / machine.
 extern const uint32_t MAX_MEM;

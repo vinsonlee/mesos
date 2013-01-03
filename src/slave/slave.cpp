@@ -88,6 +88,8 @@ Slave::Slave(const flags::Flags<logging::Flags, slave::Flags>& _flags,
   if (flags.resources.isNone()) {
     // TODO(benh): Move this computation into Flags as the "default".
     Try<long> cpus = os::cpus();
+    // TODO(tdmackey): net::bandwidth()? More explicit?
+    Try<uint64_t> net = net::bandwidth();
     Try<uint64_t> mem = os::memory();
     Try<uint64_t> disk = fs::available();
 
@@ -95,6 +97,13 @@ Slave::Slave(const flags::Flags<logging::Flags, slave::Flags>& _flags,
       LOG(WARNING) << "Failed to auto-detect the number of cpus to use,"
                    << " defaulting to 1";
       cpus = Try<long>::some(1);
+    }
+
+    //TODO(tdmackey): use common/units
+    if (!net.isSome()) {
+      LOG(WARNING) << "Failed to auto-detect network bandwidth,"
+                   << " defaulting to 1 Gigabit/Second";
+      net = Try<uint64_t>::some(1073741824);
     }
 
     if (!mem.isSome()) {
@@ -130,8 +139,9 @@ Slave::Slave(const flags::Flags<logging::Flags, slave::Flags>& _flags,
     }
 
     Try<string> defaults = strings::format(
-        "cpus:%d;mem:%d;ports:[31000-32000];disk:%d",
+        "cpus:%d;net:%d;mem:%d;ports:[31000-32000];disk:%d",
         cpus.get(),
+        net.get(),
         mem.get(),
         disk.get());
 

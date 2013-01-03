@@ -416,6 +416,11 @@ void CgroupsIsolationModule::initialize(
     handlers["cpus"] = &CgroupsIsolationModule::cpusetChanged;
   }
 
+  if (subsystems.contains("network")) {
+    // TODO(tdmackey): implement network initialization
+    handlers["net"] = &CgroupsIsolationModule::netChanged;
+  }
+
   if (subsystems.contains("memory")) {
     handlers["mem"] = &CgroupsIsolationModule::memChanged;
   }
@@ -689,6 +694,26 @@ Try<Nothing> CgroupsIsolationModule::cpusetChanged(
   LOG(INFO) << "Updated 'cpuset.cpus' to " << *(info->cpuset)
             << " for executor " << info->executorId
             << " of framework " << info->frameworkId;
+
+  return Nothing();
+}
+
+
+Try<Nothing> CgroupsIsolationModule::netChanged(
+    CgroupInfo* info,
+    const Resource& resource)
+{
+  CHECK(resource.name() == "net");
+
+  if (resource.type() != Value::SCALAR) {
+    return Try<Nothing>::error("Expecting resource 'net' to be a scalar");
+  }
+
+  double net = resource.scalar().value();
+  size_t limitInBytes =
+    std::max((size_t) net, MIN_NETWORK_MB) * 1024LL * 1024LL;
+
+  // TODO(tdmackey): implement ;)
 
   return Nothing();
 }
