@@ -53,7 +53,7 @@ And the specific environment variables that might be relevant are:
 Java
 ====
 
-During configuraiton we attempt to determine a suitable location for
+During configuration we attempt to determine a suitable location for
 JDK so that we can build JNI based libraries. If we can not do so, you
 may need to try setting JAVA_HOME, JAVA_CPPFLAGS, or JAVA_LDFLAGS
 manually.
