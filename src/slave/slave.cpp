@@ -29,10 +29,11 @@
 
 #include <stout/duration.hpp>
 #include <stout/fs.hpp>
+#include <stout/net.hpp>
+#include <stout/numify.hpp>
 #include <stout/option.hpp>
 #include <stout/os.hpp>
 #include <stout/path.hpp>
-#include <stout/numify.hpp>
 #include <stout/strings.hpp>
 #include <stout/try.hpp>
 #include <stout/utils.hpp>

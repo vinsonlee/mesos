@@ -51,6 +51,7 @@
 
 #include "linux/cgroups.hpp"
 #include "linux/fs.hpp"
+#include "linux/net.hpp"
 #include "linux/proc.hpp"
 
 using namespace process;

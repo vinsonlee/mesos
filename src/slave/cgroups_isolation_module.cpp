@@ -67,7 +67,7 @@ namespace slave {
 const size_t CPU_SHARES_PER_CPU = 1024;
 const size_t MIN_CPU_SHARES = 10;
 const size_t MIN_MEMORY_MB = 32 * Megabyte;
-
+const size_t MIN_NETWORK_MB = 1* Megabit;
 // This is an approximate double precision equality check.
 // It only considers up to 0.001 precision.
 // This is used so that we can enforce correct arithmetic on "millicpu" units.
@@ -714,7 +714,7 @@ Try<Nothing> CgroupsIsolationModule::netChanged(
     std::max((size_t) net, MIN_NETWORK_MB) * 1024LL * 1024LL;
 
   // TODO(tdmackey): implement ;)
-
+  LOG(INFO) << limitInBytes;
   return Nothing();
 }
 

@@ -98,6 +98,12 @@ inline Try<std::string> getHostname(uint32_t ip)
   return std::string(hostname);
 }
 
+// TODO(tdmackey): implement
+inline Try<uint64_t> bandwidth(const std::string& path = "/")
+{
+  return 1;
+}
+
 } // namespace net {
 
 #endif // __STOUT_NET_HPP__
