@@ -28,7 +28,7 @@ const int32_t Megabyte = 1;
 const int32_t Gigabyte = 1024 * Megabyte;
 
 // TODO(tdmackey): add bits for networking
-const int32_t Megabit = 1
-const int32_t Gigabit = 1024 * Megabit
+const int32_t Megabit = 1;
+const int32_t Gigabit = 1024 * Megabit;
 
 #endif // __UNITS_HPP__
