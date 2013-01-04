@@ -17,18 +17,15 @@ include versions.am
 BOOST = boost-$(BOOST_VERSION)
 GLOG = glog-$(GLOG_VERSION)
 GMOCK = gmock-$(GMOCK_VERSION)
-GPERFTOOLS = gperftools-$(GPERFTOOLS_VERSION)
 GTEST = $(GMOCK)/gtest
 RY_HTTP_PARSER = ry-http-parser-$(RY_HTTP_PARSER_VERSION)
 LIBEV = libev-$(LIBEV_VERSION)
 
 
 EXTRA_DIST = $(BOOST).tar.gz $(GLOG).tar.gz $(GMOCK).tar.gz		\
-	$(GPERFTOOLS).tar.gz $(RY_HTTP_PARSER).tar.gz $(LIBEV).tar.gz	\
-	libev-3.8.patch
+	$(RY_HTTP_PARSER).tar.gz $(LIBEV).tar.gz libev-3.8.patch
 
-CLEAN_EXTRACTED = $(BOOST) $(GLOG) $(GMOCK) $(GPERFTOOLS)		\
-	$(RY_HTTP_PARSER) $(LIBEV)
+CLEAN_EXTRACTED = $(BOOST) $(GLOG) $(GMOCK) $(RY_HTTP_PARSER) $(LIBEV)
 
 
 # Convenience library for Ryan Dahl's HTTP parser.
@@ -69,11 +66,6 @@ $(GLOG)/libglog.la: $(GLOG)-stamp
           $(MAKE) $(AM_MAKEFLAGS)
 
 $(GMOCK)/src/gmock-all.cc: $(GMOCK)-stamp
-
-$(GPERFTOOLS)/libprofiler.la: $(GPERFTOOLS)-stamp
-	cd $(GPERFTOOLS) && ./configure  $(CONFIGURE_ARGS) && \
-	  $(MAKE) $(AM_MAKEFLAGS)
-
 $(GTEST)/src/gtest-all.cc: $(GMOCK)-stamp
 
 $(RY_HTTP_PARSER)/http_parser.c: $(RY_HTTP_PARSER)-stamp
@@ -82,8 +74,7 @@ $(LIBEV)/libev.la: $(LIBEV)-stamp
 	cd $(LIBEV) && ./configure $(CONFIGURE_ARGS) && \
           $(MAKE) $(AM_MAKEFLAGS)
 
-THIRD_PARTY_LIBS = $(BOOST)-stamp $(GLOG)/libglog.la	\
-	$(GPERFTOOLS)/libprofiler.la $(LIBEV)/libev.la
+THIRD_PARTY_LIBS = $(BOOST)-stamp $(GLOG)/libglog.la $(LIBEV)/libev.la
 
 all-local: $(THIRD_PARTY_LIBS)
 
