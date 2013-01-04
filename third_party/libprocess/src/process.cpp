@@ -57,7 +57,6 @@
 #include <process/io.hpp>
 #include <process/mime.hpp>
 #include <process/process.hpp>
-#include <process/profiler.hpp>
 #include <process/socket.hpp>
 #include <process/thread.hpp>
 #include <process/timer.hpp>
@@ -1390,9 +1389,6 @@ void initialize(const string& delegate)
 
   // Create global garbage collector.
   gc = spawn(new GarbageCollector());
-
-  // Create the global profiler.
-  spawn(new Profiler(), true);
 
   // Initialize the mime types.
   mime::initialize();
