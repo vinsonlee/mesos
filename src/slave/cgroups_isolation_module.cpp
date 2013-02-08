@@ -68,6 +68,21 @@ const size_t CPU_SHARES_PER_CPU = 1024;
 const size_t MIN_CPU_SHARES = 10;
 const size_t MIN_MEMORY_MB = 32 * Megabyte;
 
+// CFS Constants
+// cfs_quota_us: total available run-time within a period (in microseconds)
+// CFS_PERIOD_US: length of a period (in microseconds)
+// Setting Quota to a negative number removes CFS bandwidth limits.
+// When Quota value is equal to period value the group will have
+// 1 CPU worth of compute time.
+// Lower period length ensures more consistent latency response at
+// the expense of burst capacity. Larger period sacrifices latency
+// for burst compute capacity.
+// TODO(tdmackey): Expose CFS period as "resource"?
+const size_t CPU_CFS_PERIOD_US = 100000; // 100ms
+const size_t MIN_CPU_CFS_QUOTA_US = 1000; // 1ms
+const size_t CPU_DEFAULT_CFS_QUOTA = -1; // No Quota
+
+
 // This is an approximate double precision equality check.
 // It only considers up to 0.001 precision.
 // This is used so that we can enforce correct arithmetic on "millicpu" units.
@@ -226,7 +241,7 @@ void CgroupsIsolationModule::initialize(
     subsystems.insert(subsystem);
   }
 
-  // Regardless of whether or not it was destired, we require the
+  // Regardless of whether or not it was desired, we require the
   // 'freezer' subsystem in order to destroy a cgroup.
   subsystems.insert("freezer");
 
@@ -346,6 +361,19 @@ void CgroupsIsolationModule::initialize(
   // Configure resource changed handlers. We only add handlers for
   // resources that have the appropriate subsystems attached.
   if (subsystems.contains("cpu")) {
+    // See if the kernel also supports CFS Bandwidth controls.
+	exists = cgroups::exists(hierarchy, "mesos", "cpu.cfs_quota_us");
+	CHECK(exists.isSome())
+	  << "Failed to determine if 'cpu.cfs_quota_us' control exists: "
+	  << exists.error();
+    if (!exists.get()) {
+      // TODO(tdmackey): Most things are happy without cfs support.
+      // We could continue here instead of failing hard, but then
+      // must replicated check in cpusChanged for feature existence.
+	  EXIT(1) << "Failed to find 'cpu.cfs_quota_us', your kernel "
+	          << "might be too old to use the cgroups isolation module";
+    }
+
     handlers["cpus"] = &CgroupsIsolationModule::cpusChanged;
   }
 
@@ -635,10 +663,11 @@ Try<Nothing> CgroupsIsolationModule::cpusChanged(
 
   double cpus = resource.scalar().value();
   size_t cpuShares =
-    std::max((size_t)(CPU_SHARES_PER_CPU * cpus), MIN_CPU_SHARES);
+    std::max((size_t) (CPU_SHARES_PER_CPU * cpus), MIN_CPU_SHARES);
 
   Try<Nothing> write = cgroups::write(
       hierarchy, info->name(), "cpu.shares", stringify(cpuShares));
+
   if (write.isError()) {
     return Try<Nothing>::error(
         "Failed to update 'cpu.shares': " + write.error());
@@ -647,6 +676,33 @@ Try<Nothing> CgroupsIsolationModule::cpusChanged(
   LOG(INFO) << "Updated 'cpu.shares' to " << cpuShares
             << " for executor " << info->executorId
             << " of framework " << info->frameworkId;
+
+
+  // CFS "hard" Bandwidth limiting
+  size_t cpuCFSQuota =
+      std::max((size_t) (CPU_CFS_PERIOD_US * cpus), MIN_CPU_CFS_QUOTA_US);
+
+  write = cgroups::write(
+      hierarchy, info->name(), "cpu.cfs_period_us", stringify(CPU_CFS_PERIOD_US));
+  if (write.isError()) {
+    return Try<Nothing>::error(
+	    "Failed to update 'cpu.cfs_period_us': " + write.error());
+  }
+
+  LOG(INFO) << "Updated 'cpu.cfs_period_us' to " << CPU_CFS_PERIOD_US
+	        << " for executor " << info->executorId
+	        << " of framework " << info->frameworkId;
+
+  write = cgroups::write(
+    hierarchy, info->name(), "cpu.cfs_quota_us", stringify(cpuCFSQuota));
+  if (write.isError()) {
+    return Try<Nothing>::error(
+	    "Failed to update 'cpu.cfs_quota_us': " + write.error());
+  }
+
+  LOG(INFO) << "Updated 'cpu.cfs_quota_us' to " << cpuCFSQuota
+	        << " for executor " << info->executorId
+	        << " of framework " << info->frameworkId;
 
   return Nothing();
 }
