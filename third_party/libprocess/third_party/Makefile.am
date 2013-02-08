@@ -70,9 +70,11 @@ $(GLOG)/libglog.la: $(GLOG)-stamp
 
 $(GMOCK)/src/gmock-all.cc: $(GMOCK)-stamp
 
+if HAS_GPERFTOOLS
 $(GPERFTOOLS)/libprofiler.la: $(GPERFTOOLS)-stamp
 	cd $(GPERFTOOLS) && ./configure $(CONFIGURE_ARGS) && \
 	  $(MAKE) $(AM_MAKEFLAGS)
+endif
 
 $(GTEST)/src/gtest-all.cc: $(GMOCK)-stamp
 
@@ -83,7 +85,11 @@ $(LIBEV)/libev.la: $(LIBEV)-stamp
           $(MAKE) $(AM_MAKEFLAGS)
 
 THIRD_PARTY_LIBS = $(BOOST)-stamp $(GLOG)/libglog.la	\
-	$(GPERFTOOLS)/libprofiler.la $(LIBEV)/libev.la
+	$(LIBEV)/libev.la
+
+if HAS_GPERFTOOLS
+THIRD_PARTY_LIBS += $(GPERFTOOLS)/libprofiler.la
+endif
 
 all-local: $(THIRD_PARTY_LIBS)
 

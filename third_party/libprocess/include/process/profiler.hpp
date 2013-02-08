@@ -3,7 +3,9 @@
 
 #include <glog/logging.h>
 
+#ifdef HAS_GPERFTOOLS
 #include <gperftools/profiler.h>
+#endif
 
 #include <string>
 
@@ -37,6 +39,7 @@ private:
   // Starts the profiler. There are no request parameters.
   Future<http::Response> start(const http::Request& request)
   {
+#ifdef HAS_GPERFTOOLS
     if (started) {
       return http::BadRequest("Profiler already started.\n");
     }
@@ -60,6 +63,11 @@ private:
 
     started = true;
     return http::OK("Profiler started.\n");
+#else
+    return http::BadRequest(
+        "Perftools is disabled. To enable perftools, "
+        "configure libprocess without --disable-perftools.\n");
+#endif
   }
 
   // Stops the profiler. There are no request parameters.
@@ -67,6 +75,7 @@ private:
   // in the working directory.
   Future<http::Response> stop(const http::Request& request)
   {
+#ifdef HAS_GPERFTOOLS
     if (!started) {
       return http::BadRequest("Profiler not running.\n");
     }
@@ -84,6 +93,11 @@ private:
 
     started = false;
     return response;
+#else
+    return http::BadRequest(
+        "Perftools is disabled. To enable perftools, "
+        "configure libprocess without --disable-perftools.\n");
+#endif
   }
 
   bool started;
