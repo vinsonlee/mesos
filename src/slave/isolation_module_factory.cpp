@@ -21,7 +21,7 @@
 #ifdef __sun__
 #include "solaris_project_isolation_module.hpp"
 #elif __linux__
-#include "lxc_isolation_module.hpp"
+#include "cgroups_isolation_module.hpp"
 #endif
 
 using namespace mesos::internal::slave;
@@ -33,6 +33,6 @@ DEFINE_FACTORY(IsolationModule, Slave *)
 #ifdef __sun__
   registerClass<SolarisProjectIsolationModule>("project");
 #elif __linux__
-  registerClass<LxcIsolationModule>("lxc");
+  registerClass<CgroupsIsolationModule>("cgroups");
 #endif
 }

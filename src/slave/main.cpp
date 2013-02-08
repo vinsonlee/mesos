@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   flags.add(&ip, "ip", "IP address to listen on");
 
   string isolation;
-  flags.add(&isolation, "isolation", "Isolation module", "process");
+  flags.add(&isolation, "isolation", "Isolation module", "cgroups");
 
   Option<string> master;
   flags.add(&master,
