@@ -3,7 +3,7 @@
 # third_party packages in exactly one place.
 
 BOOST_VERSION = 1.51.0
-GLOG_VERSION = 0.3.1
+GLOG_VERSION = 0.3.3
 GMOCK_VERSION = 1.6.0
 GPERFTOOLS_VERSION = 2.0
 RY_HTTP_PARSER_VERSION = 1c3624a
